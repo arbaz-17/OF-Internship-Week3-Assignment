@@ -1,5 +1,27 @@
 import { API_CONFIG } from "./config.js";
 
+export class ApiError extends Error {
+  constructor(message, options = {}) {
+    super(message, {
+      cause: options.cause,
+    });
+
+    this.name = "ApiError";
+    this.status = options.status ?? null;
+  }
+}
+
+function validateApiConfiguration() {
+  const hasValidKey =
+    typeof API_CONFIG.apiKey === "string" &&
+    API_CONFIG.apiKey.trim() !== "" &&
+    API_CONFIG.apiKey !== "YOUR_RAWG_API_KEY";
+
+  if (!hasValidKey) {
+    throw new ApiError("RAWG API key is not configured");
+  }
+}
+
 function normalizeGame(game) {
   return {
     id: game.id,
@@ -29,8 +51,22 @@ function validateApiResponse(data) {
     typeof data !== "object" ||
     !Array.isArray(data.results)
   ) {
-    throw new Error(
+    throw new ApiError(
       "The game service returned an unexpected response"
+    );
+  }
+}
+
+async function parseResponse(response) {
+  try {
+    return await response.json();
+  } catch (error) {
+    throw new ApiError(
+      "The game service returned invalid JSON",
+      {
+        status: response.status,
+        cause: error,
+      }
     );
   }
 }
@@ -40,6 +76,8 @@ export async function searchGames({
   page = 1,
   signal,
 }) {
+  validateApiConfiguration();
+
   const url = new URL(`${API_CONFIG.baseUrl}/games`);
 
   url.searchParams.set("key", API_CONFIG.apiKey);
@@ -54,13 +92,18 @@ export async function searchGames({
     signal,
   });
 
-  if (!response.ok) {
-    throw new Error(
-      `Game request failed with status ${response.status}`
-    );
-  }
+  const data = await parseResponse(response);
 
-  const data = await response.json();
+  if (!response.ok) {
+    const apiMessage =
+      typeof data.detail === "string"
+        ? data.detail
+        : `Game request failed with status ${response.status}`;
+
+    throw new ApiError(apiMessage, {
+      status: response.status,
+    });
+  }
 
   validateApiResponse(data);
 
