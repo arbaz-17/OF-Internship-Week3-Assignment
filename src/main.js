@@ -1,0 +1,1 @@
+console.log("Video Game Discovery Library initialized");
