@@ -139,6 +139,8 @@ export function showInitialState(
 
 export function showLoadingState(query) {
   hideStatusMessages();
+  clearResults();
+  hidePagination();
 
   elements.loadingState.textContent = query
     ? `Searching the game library for “${query}”...`
@@ -146,7 +148,6 @@ export function showLoadingState(query) {
 
   elements.loadingState.hidden = false;
 }
-
 export function showErrorState(
   message = "We could not load the games. Please try again."
 ) {
