@@ -1,3 +1,35 @@
+function getRequiredElement(selector) {
+  const element = document.querySelector(selector);
+
+  if (!element) {
+    throw new Error(`Required element not found: ${selector}`);
+  }
+
+  return element;
+}
+
+const elements = {
+  initialState: getRequiredElement("#initial-state"),
+  loadingState: getRequiredElement("#loading-state"),
+  errorState: getRequiredElement("#error-state"),
+  emptyState: getRequiredElement("#empty-state"),
+  resultsSection: getRequiredElement("#results-section"),
+  resultsSummary: getRequiredElement("#results-summary"),
+  gamesGrid: getRequiredElement("#games-grid"),
+  pagination: getRequiredElement("#pagination"),
+  previousPage: getRequiredElement("#previous-page"),
+  nextPage: getRequiredElement("#next-page"),
+  currentPage: getRequiredElement("#current-page"),
+  totalPages: getRequiredElement("#total-pages"),
+};
+
+function hideStatusMessages() {
+  elements.initialState.hidden = true;
+  elements.loadingState.hidden = true;
+  elements.errorState.hidden = true;
+  elements.emptyState.hidden = true;
+}
+
 function createMetadataItem(label, value) {
   const item = document.createElement("li");
 
@@ -74,12 +106,90 @@ export function createGameCard(game) {
   return card;
 }
 
-export function renderGames(games, container) {
+export function renderGames(games) {
   const fragment = document.createDocumentFragment();
 
   games.forEach((game) => {
     fragment.append(createGameCard(game));
   });
 
-  container.replaceChildren(fragment);
+  elements.gamesGrid.replaceChildren(fragment);
+}
+
+export function clearResults() {
+  elements.gamesGrid.replaceChildren();
+  elements.resultsSummary.textContent = "";
+  elements.resultsSection.hidden = true;
+}
+
+export function hidePagination() {
+  elements.pagination.hidden = true;
+}
+
+export function showInitialState(
+  message = "Start typing a game title to discover games."
+) {
+  hideStatusMessages();
+  clearResults();
+  hidePagination();
+
+  elements.initialState.textContent = message;
+  elements.initialState.hidden = false;
+}
+
+export function showLoadingState(query) {
+  hideStatusMessages();
+
+  elements.loadingState.textContent = query
+    ? `Searching the game library for “${query}”...`
+    : "Searching the game library...";
+
+  elements.loadingState.hidden = false;
+}
+
+export function showErrorState(
+  message = "We could not load the games. Please try again."
+) {
+  hideStatusMessages();
+  clearResults();
+  hidePagination();
+
+  elements.errorState.textContent = message;
+  elements.errorState.hidden = false;
+}
+
+export function showEmptyState(query) {
+  hideStatusMessages();
+  clearResults();
+  hidePagination();
+
+  elements.emptyState.textContent = query
+    ? `No matching games were found for “${query}”.`
+    : "No matching games were found.";
+
+  elements.emptyState.hidden = false;
+}
+
+export function showResults(games, summary) {
+  hideStatusMessages();
+
+  renderGames(games);
+
+  elements.resultsSummary.textContent = summary;
+  elements.resultsSection.hidden = false;
+}
+
+export function updatePagination({
+  currentPage,
+  totalPages,
+  hasPrevious,
+  hasNext,
+}) {
+  elements.currentPage.textContent = String(currentPage);
+  elements.totalPages.textContent = String(totalPages);
+
+  elements.previousPage.disabled = !hasPrevious;
+  elements.nextPage.disabled = !hasNext;
+
+  elements.pagination.hidden = totalPages <= 1;
 }
