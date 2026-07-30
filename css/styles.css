@@ -337,6 +337,67 @@ a:focus-visible {
   font-weight: 700;
 }
 
+.game-card--skeleton {
+  pointer-events: none;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.4rem;
+  background-color: var(--surface-light);
+}
+
+.skeleton::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  content: "";
+  transform: translateX(-100%);
+  animation: skeleton-loading 1.4s infinite;
+}
+
+.skeleton--media {
+  aspect-ratio: 16 / 9;
+  border-radius: 0;
+}
+
+.skeleton--title {
+  width: 72%;
+  height: 1.4rem;
+}
+
+.skeleton--line {
+  width: 100%;
+  height: 0.85rem;
+}
+
+.skeleton--short {
+  width: 58%;
+}
+
+@keyframes skeleton-loading {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Pagination */
 
 .pagination {

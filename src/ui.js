@@ -132,6 +132,45 @@ if (game.image) {
   return card;
 }
 
+function createSkeletonCard() {
+  const card = document.createElement("article");
+  card.className = "game-card game-card--skeleton";
+  card.setAttribute("aria-hidden", "true");
+
+  const media = document.createElement("div");
+  media.className = "skeleton skeleton--media";
+
+  const content = document.createElement("div");
+  content.className = "game-card__content";
+
+  const title = document.createElement("div");
+  title.className = "skeleton skeleton--title";
+
+  const lineOne = document.createElement("div");
+  lineOne.className = "skeleton skeleton--line";
+
+  const lineTwo = document.createElement("div");
+  lineTwo.className = "skeleton skeleton--line skeleton--short";
+
+  const lineThree = document.createElement("div");
+  lineThree.className = "skeleton skeleton--line";
+
+  content.append(title, lineOne, lineTwo, lineThree);
+  card.append(media, content);
+
+  return card;
+}
+
+function renderSkeletons(count = 6) {
+  const fragment = document.createDocumentFragment();
+
+  for (let index = 0; index < count; index += 1) {
+    fragment.append(createSkeletonCard());
+  }
+
+  elements.gamesGrid.replaceChildren(fragment);
+}
+
 export function renderGames(games) {
   const fragment = document.createDocumentFragment();
 
@@ -166,7 +205,6 @@ export function showInitialState(
 
 export function showLoadingState(query) {
   hideStatusMessages();
-  clearResults();
   hidePagination();
   setBusyState(true);
 
@@ -175,6 +213,11 @@ export function showLoadingState(query) {
     : "Searching the game library...";
 
   elements.loadingState.hidden = false;
+
+  elements.resultsSummary.textContent = "Loading results...";
+  elements.resultsSection.hidden = false;
+
+  renderSkeletons();
 }
 
 
