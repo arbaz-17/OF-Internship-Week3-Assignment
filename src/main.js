@@ -3,7 +3,12 @@ import {
   searchGames,
 } from "./api.js";
 
-import { SEARCH_CONFIG } from "./config.js";
+import {
+  API_CONFIG,
+  SEARCH_CONFIG,
+} from "./config.js";
+
+import { createSearchCache } from "./cache.js";
 import { debounce } from "./debounce.js";
 
 import {
@@ -36,6 +41,8 @@ if (
     "Required application interface elements were not found"
   );
 }
+
+const searchCache = createSearchCache();
 
 const searchState = {
   activeQuery: "",
@@ -71,10 +78,6 @@ function cancelActiveRequest() {
     searchState.activeController = null;
   }
 
-  /*
-   * Any previous request now has an outdated ID and
-   * cannot update the current interface.
-   */
   searchState.latestRequestId += 1;
 }
 
@@ -90,67 +93,106 @@ function resetSearchInterface(message) {
   showInitialState(message);
 }
 
+function renderSearchResult(
+  result,
+  query,
+  { fromCache = false } = {}
+) {
+  searchState.activeQuery = query;
+  searchState.currentPage = result.currentPage;
+  searchState.totalPages = result.totalPages;
+
+  if (result.games.length === 0) {
+    showEmptyState(query);
+    return;
+  }
+
+  const formattedCount =
+    result.totalResults.toLocaleString();
+
+  const cacheLabel = fromCache
+    ? " · Cached result"
+    : "";
+
+  showResults(
+    result.games,
+    `${formattedCount} games found for “${query}” · Page ${result.currentPage} of ${result.totalPages}${cacheLabel}`
+  );
+
+  updatePagination({
+    currentPage: result.currentPage,
+    totalPages: result.totalPages,
+    hasPrevious: result.hasPrevious,
+    hasNext: result.hasNext,
+  });
+}
+
 async function performSearch(query, page = 1) {
+  const trimmedQuery = query.trim();
+
+  if (!trimmedQuery || !Number.isInteger(page) || page < 1) {
+    return;
+  }
+
   /*
-   * A page change or immediate submission may happen
-   * while another request is active.
+   * Any previous network request is now obsolete,
+   * including when the requested page is cached.
    */
-  if (searchState.activeController) {
-    searchState.activeController.abort();
+  cancelActiveRequest();
+
+  searchState.activeQuery = trimmedQuery;
+  searchState.currentPage = page;
+
+  const cacheParameters = {
+    query: trimmedQuery,
+    page,
+    pageSize: API_CONFIG.pageSize,
+  };
+
+  const cachedResult =
+    searchCache.get(cacheParameters);
+
+  if (cachedResult) {
+    searchButton.disabled = false;
+
+    renderSearchResult(
+      cachedResult,
+      trimmedQuery,
+      {
+        fromCache: true,
+      }
+    );
+
+    return;
   }
 
   const controller = new AbortController();
   const requestId = ++searchState.latestRequestId;
 
   searchState.activeController = controller;
-  searchState.activeQuery = query;
-  searchState.currentPage = page;
 
-  showLoadingState(query);
+  showLoadingState(trimmedQuery);
   searchButton.disabled = true;
 
   try {
     const result = await searchGames({
-      query,
+      query: trimmedQuery,
       page,
       signal: controller.signal,
     });
 
-    /*
-     * Even if cancellation did not stop an operation in
-     * time, an outdated request cannot update the UI.
-     */
     if (requestId !== searchState.latestRequestId) {
       return;
     }
 
-    searchState.currentPage = result.currentPage;
-    searchState.totalPages = result.totalPages;
-
-    if (result.games.length === 0) {
-      showEmptyState(query);
-      return;
-    }
-
-    const formattedCount =
-      result.totalResults.toLocaleString();
-
-    showResults(
-      result.games,
-      `${formattedCount} games found for “${query}” · Page ${result.currentPage} of ${result.totalPages}`
-    );
-
-    updatePagination({
-      currentPage: result.currentPage,
-      totalPages: result.totalPages,
-      hasPrevious: result.hasPrevious,
-      hasNext: result.hasNext,
-    });
-  } catch (error) {
     /*
-     * Cancellation is expected when the query changes.
-     * It should not appear as an application error.
+     * Cache successful responses, including responses
+     * that contain an empty results array.
      */
+    searchCache.set(cacheParameters, result);
+
+    renderSearchResult(result, trimmedQuery);
+  } catch (error) {
     if (controller.signal.aborted) {
       return;
     }
@@ -163,10 +205,6 @@ async function performSearch(query, page = 1) {
 
     showErrorState(getUserErrorMessage(error));
   } finally {
-    /*
-     * Only the latest request may change shared loading
-     * controls or clear the current controller.
-     */
     if (requestId === searchState.latestRequestId) {
       searchButton.disabled = false;
 
@@ -184,10 +222,6 @@ const debouncedSearch = debounce((query) => {
 searchInput.addEventListener("input", () => {
   const query = searchInput.value.trim();
 
-  /*
-   * The previous query becomes outdated immediately,
-   * not only after the debounce timer completes.
-   */
   debouncedSearch.cancel();
   cancelActiveRequest();
 
@@ -223,10 +257,6 @@ searchForm.addEventListener("submit", (event) => {
 
   const query = searchInput.value.trim();
 
-  /*
-   * Pressing Enter should search immediately instead of
-   * waiting for the remaining debounce delay.
-   */
   debouncedSearch.cancel();
 
   if (query.length < 2) {
