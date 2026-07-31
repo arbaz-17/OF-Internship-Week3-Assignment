@@ -1,14 +1,14 @@
 import {
   ApiError,
   searchGames,
-} from "./api.js";
+} from "./api/api.js";
 
 import {
   API_CONFIG,
   SEARCH_CONFIG,
-} from "./config.js";
+} from "./config/config.js";
 
-import { createSearchCache } from "./cache.js";
+import { createSearchCache } from "./cache/cache.js";
 import { debounce } from "./debounce.js";
 
 import {

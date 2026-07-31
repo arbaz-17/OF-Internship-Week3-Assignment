@@ -1,4 +1,4 @@
-import { API_CONFIG } from "./config.js";
+import { API_CONFIG } from "../config/config.js";
 
 export class ApiError extends Error {
   constructor(message, options = {}) {
