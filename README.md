@@ -68,6 +68,20 @@ OF-Internship-Week3-Assignment/
 > `config.js` contains the local API key and is excluded from Git.  
 > `config.example.js` is committed to show the required configuration structure.
 
+## Module Responsibilities
+
+| File | Responsibility |
+|---|---|
+| `index.html` | Defines the application structure, including the search form, status messages, results grid, and pagination controls. |
+| `css/styles.css` | Controls the visual design, responsive layout, game cards, loading skeletons, states, and pagination styling. |
+| `src/main.js` | Acts as the application controller. It coordinates user events, debounce, caching, API requests, cancellation, race protection, and UI updates. |
+| `src/api/api.js` | Builds RAWG API requests, handles responses and errors, normalizes game data, and returns pagination information. |
+| `src/ui/ui.js` | Creates game cards and controls the initial, loading, success, empty, error, and pagination UI states. |
+| `src/debounce/debounce.js` | Delays automatic searching until the user pauses typing and supports cancelling a pending search. |
+| `src/cache/cache.js` | Stores successful API results in an in-memory `Map` to prevent repeated requests for the same query and page. |
+| `src/config/config.js` | Stores the local API key and application settings. It is excluded from Git and used only during local development. |
+| `src/config/config.example.js` | Provides the required configuration structure without including a real API key. |
+
 ## Week 3 Concepts Used
 
 ### Promises and Async/Await
