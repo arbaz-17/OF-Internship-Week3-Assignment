@@ -4,9 +4,15 @@
 
 The configuration module stores values used by GameBox, including the API base URL, API key, page size, and debounce delay.
 
-The real `config.js` file is used only in the local development environment and is excluded from Git.
+## Deployment Configuration
 
-The tracked `config.example.js` file documents the required configuration structure without exposing a real API key.
+`config.js` is committed because the application is deployed through GitHub Pages.
+
+GitHub Pages serves static files and cannot privately inject environment variables into browser JavaScript. Therefore, the API key used by the deployed frontend is visible in the source code and browser Network tab.
+
+The project uses a separate, rotatable demo key rather than a sensitive production credential.
+
+`config.example.js` remains available to document the expected configuration structure.
 
 ## How It Connects to Other Files
 
@@ -64,6 +70,5 @@ config.js         → local and ignored
 1. The developer creates a local config.js file.
 2. api.js reads the API URL, key, and page size.
 3. main.js reads the page size and debounce delay.
-4. config.js remains excluded through .gitignore.
-5. config.example.js remains available as setup documentation.
+4. config.example.js remains available as setup documentation.
 ```

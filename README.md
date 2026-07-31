@@ -65,8 +65,9 @@ OF-Internship-Week3-Assignment/
 └── README.md
 ```
 
-> `config.js` contains the local API key and is excluded from Git.  
-> `config.example.js` is committed to show the required configuration structure.
+> `config.js` is committed because GitHub Pages is a static hosting service and the browser must load this file at runtime.
+> The project uses a separate, rotatable demo API key. The key should not be treated as private because frontend configuration is visible in browser developer tools.
+> `config.example.js` documents the required configuration structure using a placeholder value.  
 
 ## Module Responsibilities
 
