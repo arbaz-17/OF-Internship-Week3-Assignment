@@ -125,11 +125,9 @@ Timers are used for debouncing, while Fetch and AbortController handle asynchron
 ## Local Setup
 
 1. Clone the repository.
-2. Open the `src/config` folder.
-3. Copy `config.example.js`.
-4. Rename the copy to `config.js`.
-5. Add a valid RAWG API key.
-6. Run the project using Live Server or another local development server.
+2. Open `src/config/config.js`.
+3. Replace the demo key with your own RAWG API key when needed.
+4. Run the application using Live Server or another local server.
 
 Example:
 

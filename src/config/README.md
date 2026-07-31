@@ -23,7 +23,7 @@ The project uses a separate, rotatable demo key rather than a sensitive producti
 ## Key Features
 
 * Centralizes reusable application settings.
-* Keeps the real API key out of the repository.
+* Uses a separate rotatable demo key for the static deployment.
 * Provides a safe example configuration for other developers.
 * Defines the API endpoint and result page size.
 * Defines the search debounce delay.
@@ -52,17 +52,20 @@ export const SEARCH_CONFIG = {
 
 Defines how long the application waits after typing before starting a search.
 
-## Local Setup
+## Local and Deployment Setup
 
-1. Copy `config.example.js`.
-2. Rename the copy to `config.js`.
-3. Replace `GAME_DB_API_KEY` with a valid API key.
-4. Keep `config.js` uncommitted.
+`config.js` is committed because GitHub Pages must load it in the browser.
+
+The API key used here is a separate, rotatable demo key and must not
+be considered private.
+
+`config.example.js` provides the expected configuration structure
+without containing a real key.
 
 ```text
-config.example.js → safe and committed
-config.js         → local and ignored
-```
+config.example.js → placeholder configuration
+config.js         → deployed configuration using a demo key
+
 
 ## Basic Execution Flow
 
