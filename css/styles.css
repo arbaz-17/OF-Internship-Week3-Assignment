@@ -274,20 +274,6 @@ button:disabled {
   object-fit: cover;
 }
 
-.game-card__placeholder {
-  display: grid;
-  width: 4rem;
-  height: 4rem;
-  border: 1px solid var(--border-hover);
-  border-radius: 50%;
-  place-items: center;
-  background-color: var(--surface);
-  color: var(--text-primary);
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
 .game-card__content {
   display: grid;
   gap: 1rem;
