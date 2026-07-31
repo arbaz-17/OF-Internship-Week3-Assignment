@@ -1,6 +1,6 @@
 export const API_CONFIG = {
   baseUrl: "https://api.rawg.io/api",
-  apiKey: "ea02c50908ff469a83ba8cf11d4a824c",
+  apiKey: "GAME_DB_API_KEY",
   pageSize: 12,
 };
 
