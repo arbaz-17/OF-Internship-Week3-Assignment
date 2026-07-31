@@ -1,5 +1,5 @@
 # Local API configuration
-src/config/config.js
+
 
 # Environment files
 .env
