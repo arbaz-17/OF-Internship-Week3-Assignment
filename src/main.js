@@ -9,7 +9,7 @@ import {
 } from "./config/config.js";
 
 import { createSearchCache } from "./cache/cache.js";
-import { debounce } from "./debounce.js";
+import { debounce } from "./debounce/debounce.js";
 
 import {
   showEmptyState,
@@ -18,7 +18,7 @@ import {
   showLoadingState,
   showResults,
   updatePagination,
-} from "./ui.js";
+} from "./ui/ui.js";
 
 const searchForm = document.querySelector("#search-form");
 const searchInput = document.querySelector("#search-input");
@@ -135,10 +135,6 @@ async function performSearch(query, page = 1) {
     return;
   }
 
-  /*
-   * Any previous network request is now obsolete,
-   * including when the requested page is cached.
-   */
   cancelActiveRequest();
 
   searchState.activeQuery = trimmedQuery;
@@ -185,11 +181,6 @@ async function performSearch(query, page = 1) {
     if (requestId !== searchState.latestRequestId) {
       return;
     }
-
-    /*
-     * Cache successful responses, including responses
-     * that contain an empty results array.
-     */
     searchCache.set(cacheParameters, result);
 
     renderSearchResult(result, trimmedQuery);
