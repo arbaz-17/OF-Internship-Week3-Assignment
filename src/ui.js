@@ -9,7 +9,6 @@ function getRequiredElement(selector) {
 }
 
 const elements = {
-    statusRegion: getRequiredElement("#status-region"),
   initialState: getRequiredElement("#initial-state"),
   loadingState: getRequiredElement("#loading-state"),
   errorState: getRequiredElement("#error-state"),
@@ -31,18 +30,6 @@ function hideStatusMessages() {
   elements.emptyState.hidden = true;
 }
 
-function setBusyState(isBusy) {
-  elements.statusRegion.setAttribute(
-    "aria-busy",
-    String(isBusy)
-  );
-
-  elements.resultsSection.setAttribute(
-    "aria-busy",
-    String(isBusy)
-  );
-}
-
 function createMetadataItem(label, value) {
   const item = document.createElement("li");
 
@@ -62,11 +49,6 @@ function createCoverPlaceholder(gameName) {
   const placeholder = document.createElement("div");
 
   placeholder.className = "game-card__placeholder";
-  placeholder.setAttribute("role", "img");
-  placeholder.setAttribute(
-    "aria-label",
-    `Cover placeholder for ${gameName}`
-  );
 
   placeholder.textContent = gameName
     .split(" ")
@@ -85,30 +67,32 @@ export function createGameCard(game) {
   const mediaContainer = document.createElement("div");
   mediaContainer.className = "game-card__media";
 
-if (game.image) {
-  const image = document.createElement("img");
+  if (game.image) {
+    const image = document.createElement("img");
 
-  image.src = game.image;
-  image.alt = `${game.name} cover`;
-  image.loading = "lazy";
-  image.decoding = "async";
+    image.src = game.image;
+    image.alt = `${game.name} cover`;
+    image.loading = "lazy";
+    image.decoding = "async";
 
-  image.addEventListener(
-    "error",
-    () => {
-      const placeholder = createCoverPlaceholder(game.name);
+    image.addEventListener(
+      "error",
+      () => {
+        const placeholder = createCoverPlaceholder(game.name);
 
-      image.replaceWith(placeholder);
-    },
-    {
-      once: true,
-    }
-  );
+        image.replaceWith(placeholder);
+      },
+      {
+        once: true,
+      }
+    );
 
-  mediaContainer.append(image);
-} else {
-  mediaContainer.append(createCoverPlaceholder(game.name));
-}
+    mediaContainer.append(image);
+  } else {
+    mediaContainer.append(
+      createCoverPlaceholder(game.name)
+    );
+  }
 
   const content = document.createElement("div");
   content.className = "game-card__content";
@@ -122,8 +106,14 @@ if (game.image) {
   metadata.append(
     createMetadataItem("Released", game.released),
     createMetadataItem("Rating", `${game.rating} / 5`),
-    createMetadataItem("Platforms", game.platforms.join(", ")),
-    createMetadataItem("Genres", game.genres.join(", "))
+    createMetadataItem(
+      "Platforms",
+      game.platforms.join(", ")
+    ),
+    createMetadataItem(
+      "Genres",
+      game.genres.join(", ")
+    )
   );
 
   content.append(title, metadata);
@@ -135,7 +125,6 @@ if (game.image) {
 function createSkeletonCard() {
   const card = document.createElement("article");
   card.className = "game-card game-card--skeleton";
-  card.setAttribute("aria-hidden", "true");
 
   const media = document.createElement("div");
   media.className = "skeleton skeleton--media";
@@ -150,12 +139,19 @@ function createSkeletonCard() {
   lineOne.className = "skeleton skeleton--line";
 
   const lineTwo = document.createElement("div");
-  lineTwo.className = "skeleton skeleton--line skeleton--short";
+  lineTwo.className =
+    "skeleton skeleton--line skeleton--short";
 
   const lineThree = document.createElement("div");
   lineThree.className = "skeleton skeleton--line";
 
-  content.append(title, lineOne, lineTwo, lineThree);
+  content.append(
+    title,
+    lineOne,
+    lineTwo,
+    lineThree
+  );
+
   card.append(media, content);
 
   return card;
@@ -197,7 +193,6 @@ export function showInitialState(
   hideStatusMessages();
   clearResults();
   hidePagination();
-  setBusyState(false);
 
   elements.initialState.textContent = message;
   elements.initialState.hidden = false;
@@ -206,7 +201,6 @@ export function showInitialState(
 export function showLoadingState(query) {
   hideStatusMessages();
   hidePagination();
-  setBusyState(true);
 
   elements.loadingState.textContent = query
     ? `Searching the game library for “${query}”...`
@@ -220,14 +214,12 @@ export function showLoadingState(query) {
   renderSkeletons();
 }
 
-
 export function showErrorState(
   message = "We could not load the games. Please try again."
 ) {
   hideStatusMessages();
   clearResults();
   hidePagination();
-  setBusyState(false);
 
   elements.errorState.textContent = message;
   elements.errorState.hidden = false;
@@ -237,7 +229,6 @@ export function showEmptyState(query) {
   hideStatusMessages();
   clearResults();
   hidePagination();
-  setBusyState(false);
 
   elements.emptyState.textContent = query
     ? `No matching games were found for “${query}”.`
@@ -248,7 +239,6 @@ export function showEmptyState(query) {
 
 export function showResults(games, summary) {
   hideStatusMessages();
-  setBusyState(false);
 
   renderGames(games);
 
