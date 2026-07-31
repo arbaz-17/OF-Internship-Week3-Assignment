@@ -2,56 +2,68 @@
 
 ## Overview
 
-The configuration module stores values used across GameBox that may need to change without modifying application logic.
+The configuration module stores values used by GameBox, including the API base URL, API key, page size, and debounce delay.
 
-It currently contains API connection settings, pagination size, and the debounce delay used by the search input.
+The real `config.js` file is used only in the local development environment and is excluded from Git.
+
+The tracked `config.example.js` file documents the required configuration structure without exposing a real API key.
 
 ## How It Connects to Other Files
 
-* `api.js` imports `API_CONFIG` to build RAWG requests.
-* `main.js` imports `API_CONFIG.pageSize` when creating cache keys.
-* `main.js` imports `SEARCH_CONFIG.debounceDelay` when creating the debounced search function.
+* `api.js` imports `API_CONFIG` to build game-search requests.
+* `main.js` imports `API_CONFIG.pageSize` for cache keys.
+* `main.js` imports `SEARCH_CONFIG.debounceDelay` for debounced searches.
 
 ## Key Features
 
-* Keeps reusable settings in one location.
-* Avoids hardcoding the same values across multiple modules.
-* Controls the RAWG API base URL.
-* Defines the number of games requested per page.
-* Defines how long the search waits after typing.
+* Centralizes reusable application settings.
+* Keeps the real API key out of the repository.
+* Provides a safe example configuration for other developers.
+* Defines the API endpoint and result page size.
+* Defines the search debounce delay.
 
-## Important Configuration Objects
+## Configuration Objects
 
 ### `API_CONFIG`
 
 ```js
-API_CONFIG.baseUrl
-API_CONFIG.apiKey
-API_CONFIG.pageSize
+export const API_CONFIG = {
+  baseUrl: "https://api.rawg.io/api",
+  apiKey: "GAME_DB_API_KEY",
+  pageSize: 12,
+};
 ```
 
-Contains the API endpoint, API key, and number of results requested per page.
-
-Changing `pageSize` affects both API pagination and cache keys.
-
----
+Contains the API URL, local API key, and number of games requested per page.
 
 ### `SEARCH_CONFIG`
 
 ```js
-SEARCH_CONFIG.debounceDelay
+export const SEARCH_CONFIG = {
+  debounceDelay: 400,
+};
 ```
 
-Contains the delay in milliseconds before a search runs after the user stops typing.
+Defines how long the application waits after typing before starting a search.
 
-A value of `400` means the application waits 400 milliseconds.
+## Local Setup
+
+1. Copy `config.example.js`.
+2. Rename the copy to `config.js`.
+3. Replace `GAME_DB_API_KEY` with a valid API key.
+4. Keep `config.js` uncommitted.
+
+```text
+config.example.js → safe and committed
+config.js         → local and ignored
+```
 
 ## Basic Execution Flow
 
 ```text
-1. The application modules import the required configuration object.
-2. api.js uses the base URL, key, and page size to build requests.
-3. main.js uses the page size when identifying cached pages.
-4. main.js passes the debounce delay to the debounce utility.
-5. Changing a configuration value updates all modules that import it.
+1. The developer creates a local config.js file.
+2. api.js reads the API URL, key, and page size.
+3. main.js reads the page size and debounce delay.
+4. config.js remains excluded through .gitignore.
+5. config.example.js remains available as setup documentation.
 ```
