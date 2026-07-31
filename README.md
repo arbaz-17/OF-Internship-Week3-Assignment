@@ -1,4 +1,4 @@
-# GameBox
+# GameBox - Week 3 Assignment
 
 ## Overview
 
