@@ -80,7 +80,7 @@ OF-Internship-Week3-Assignment/
 | `src/ui/ui.js` | Creates game cards and controls the initial, loading, success, empty, error, and pagination UI states. |
 | `src/debounce/debounce.js` | Delays automatic searching until the user pauses typing and supports cancelling a pending search. |
 | `src/cache/cache.js` | Stores successful API results in an in-memory `Map` to prevent repeated requests for the same query and page. |
-| `src/config/config.js` | Stores the local API key and application settings. It is excluded from Git and used only during local development. |
+| `src/config/config.js` | Stores the local API key and application settings. |
 | `src/config/config.example.js` | Provides the required configuration structure without including a real API key. |
 
 ## Week 3 Concepts Used
