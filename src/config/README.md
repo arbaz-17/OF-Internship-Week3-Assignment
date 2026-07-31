@@ -65,7 +65,7 @@ without containing a real key.
 ```text
 config.example.js → placeholder configuration
 config.js         → deployed configuration using a demo key
-
+```
 
 ## Basic Execution Flow
 
