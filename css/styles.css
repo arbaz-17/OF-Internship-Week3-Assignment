@@ -233,6 +233,11 @@ button:disabled {
   font-size: 0.9rem;
 }
 
+.cache-label {
+  color: #ffffff;
+  font-weight: 700;
+}
+
 .games-grid {
   display: grid;
   grid-template-columns: repeat(

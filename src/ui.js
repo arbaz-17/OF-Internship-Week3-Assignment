@@ -204,12 +204,24 @@ export function showEmptyState(query) {
   elements.emptyState.hidden = false;
 }
 
-export function showResults(games, summary) {
+export function showResults(
+  games,
+  summary,
+  fromCache = false
+) {
   hideStatusMessages();
-
   renderGames(games);
 
   elements.resultsSummary.textContent = summary;
+
+  if (fromCache) {
+    const cacheLabel = document.createElement("strong");
+    cacheLabel.className = "cache-label";
+    cacheLabel.textContent = " · Cached result";
+
+    elements.resultsSummary.append(cacheLabel);
+  }
+
   elements.resultsSection.hidden = false;
 }
 

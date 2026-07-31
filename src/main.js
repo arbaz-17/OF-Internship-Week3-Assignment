@@ -114,10 +114,11 @@ function renderSearchResult(
     ? " · Cached result"
     : "";
 
-  showResults(
-    result.games,
-    `${formattedCount} games found for “${query}” · Page ${result.currentPage} of ${result.totalPages}${cacheLabel}`
-  );
+showResults(
+  result.games,
+  `${formattedCount} games found for “${query}” · Page ${result.currentPage} of ${result.totalPages}`,
+  fromCache
+);
 
   updatePagination({
     currentPage: result.currentPage,
