@@ -1,0 +1,15 @@
+# Local API configuration
+src/config/config.js
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output
+node_modules/
+dist/
+
+# Operating-system files
+.DS_Store
+Thumbs.db

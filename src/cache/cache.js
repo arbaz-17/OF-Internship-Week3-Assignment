@@ -17,18 +17,6 @@ export function createCacheKey({
     throw new Error("Search query cannot be empty");
   }
 
-  if (!Number.isInteger(page) || page < 1) {
-    throw new RangeError(
-      "Page must be a positive integer"
-    );
-  }
-
-  if (!Number.isInteger(pageSize) || pageSize < 1) {
-    throw new RangeError(
-      "Page size must be a positive integer"
-    );
-  }
-
   return `${normalizedQuery}|${page}|${pageSize}`;
 }
 
@@ -45,28 +33,10 @@ export function createSearchCache() {
     const key = createCacheKey(searchParameters);
 
     entries.set(key, value);
-
-    return value;
-  }
-
-  function has(searchParameters) {
-    const key = createCacheKey(searchParameters);
-
-    return entries.has(key);
-  }
-
-  function clear() {
-    entries.clear();
   }
 
   return {
     get,
     set,
-    has,
-    clear,
-
-    get size() {
-      return entries.size;
-    },
   };
 }

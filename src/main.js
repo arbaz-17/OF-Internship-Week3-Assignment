@@ -1,15 +1,15 @@
 import {
   ApiError,
   searchGames,
-} from "./api.js";
+} from "./api/api.js";
 
 import {
   API_CONFIG,
   SEARCH_CONFIG,
-} from "./config.js";
+} from "./config/config.js";
 
-import { createSearchCache } from "./cache.js";
-import { debounce } from "./debounce.js";
+import { createSearchCache } from "./cache/cache.js";
+import { debounce } from "./debounce/debounce.js";
 
 import {
   showEmptyState,
@@ -18,7 +18,7 @@ import {
   showLoadingState,
   showResults,
   updatePagination,
-} from "./ui.js";
+} from "./ui/ui.js";
 
 const searchForm = document.querySelector("#search-form");
 const searchInput = document.querySelector("#search-input");
@@ -114,10 +114,11 @@ function renderSearchResult(
     ? " · Cached result"
     : "";
 
-  showResults(
-    result.games,
-    `${formattedCount} games found for “${query}” · Page ${result.currentPage} of ${result.totalPages}${cacheLabel}`
-  );
+showResults(
+  result.games,
+  `${formattedCount} games found for “${query}” · Page ${result.currentPage} of ${result.totalPages}`,
+  fromCache
+);
 
   updatePagination({
     currentPage: result.currentPage,
@@ -134,10 +135,6 @@ async function performSearch(query, page = 1) {
     return;
   }
 
-  /*
-   * Any previous network request is now obsolete,
-   * including when the requested page is cached.
-   */
   cancelActiveRequest();
 
   searchState.activeQuery = trimmedQuery;
@@ -184,11 +181,6 @@ async function performSearch(query, page = 1) {
     if (requestId !== searchState.latestRequestId) {
       return;
     }
-
-    /*
-     * Cache successful responses, including responses
-     * that contain an empty results array.
-     */
     searchCache.set(cacheParameters, result);
 
     renderSearchResult(result, trimmedQuery);

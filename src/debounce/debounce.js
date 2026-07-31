@@ -10,49 +10,23 @@ export function debounce(callback, delay) {
   }
 
   let timeoutId = null;
-  let latestArguments = [];
-  let latestContext = null;
 
   function debounced(...argumentsList) {
-    latestArguments = argumentsList;
-    latestContext = this;
-
     if (timeoutId !== null) {
       clearTimeout(timeoutId);
     }
 
     timeoutId = setTimeout(() => {
       timeoutId = null;
-
-      callback.apply(latestContext, latestArguments);
-
-      latestArguments = [];
-      latestContext = null;
+      callback(...argumentsList);
     }, delay);
   }
 
   debounced.cancel = function cancel() {
     if (timeoutId !== null) {
       clearTimeout(timeoutId);
+      timeoutId = null;
     }
-
-    timeoutId = null;
-    latestArguments = [];
-    latestContext = null;
-  };
-
-  debounced.flush = function flush() {
-    if (timeoutId === null) {
-      return;
-    }
-
-    clearTimeout(timeoutId);
-    timeoutId = null;
-
-    callback.apply(latestContext, latestArguments);
-
-    latestArguments = [];
-    latestContext = null;
   };
 
   return debounced;

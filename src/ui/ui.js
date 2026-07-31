@@ -30,6 +30,22 @@ function hideStatusMessages() {
   elements.emptyState.hidden = true;
 }
 
+export function clearResults() {
+  elements.gamesGrid.replaceChildren();
+  elements.resultsSummary.textContent = "";
+  elements.resultsSection.hidden = true;
+}
+
+export function hidePagination() {
+  elements.pagination.hidden = true;
+}
+
+function resetView() {
+  hideStatusMessages();
+  clearResults();
+  hidePagination();
+}
+
 function createMetadataItem(label, value) {
   const item = document.createElement("li");
 
@@ -45,21 +61,6 @@ function createMetadataItem(label, value) {
   return item;
 }
 
-function createCoverPlaceholder(gameName) {
-  const placeholder = document.createElement("div");
-
-  placeholder.className = "game-card__placeholder";
-
-  placeholder.textContent = gameName
-    .split(" ")
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
-
-  return placeholder;
-}
-
 export function createGameCard(game) {
   const card = document.createElement("article");
   card.className = "game-card";
@@ -73,25 +74,20 @@ export function createGameCard(game) {
     image.src = game.image;
     image.alt = `${game.name} cover`;
     image.loading = "lazy";
-    image.decoding = "async";
 
     image.addEventListener(
       "error",
       () => {
-        const placeholder = createCoverPlaceholder(game.name);
-
-        image.replaceWith(placeholder);
+        mediaContainer.textContent = "No image available";
       },
       {
         once: true,
-      }
+      },
     );
 
     mediaContainer.append(image);
   } else {
-    mediaContainer.append(
-      createCoverPlaceholder(game.name)
-    );
+    mediaContainer.textContent = "No image available";
   }
 
   const content = document.createElement("div");
@@ -106,14 +102,8 @@ export function createGameCard(game) {
   metadata.append(
     createMetadataItem("Released", game.released),
     createMetadataItem("Rating", `${game.rating} / 5`),
-    createMetadataItem(
-      "Platforms",
-      game.platforms.join(", ")
-    ),
-    createMetadataItem(
-      "Genres",
-      game.genres.join(", ")
-    )
+    createMetadataItem("Platforms", game.platforms.join(", ")),
+    createMetadataItem("Genres", game.genres.join(", ")),
   );
 
   content.append(title, metadata);
@@ -139,18 +129,12 @@ function createSkeletonCard() {
   lineOne.className = "skeleton skeleton--line";
 
   const lineTwo = document.createElement("div");
-  lineTwo.className =
-    "skeleton skeleton--line skeleton--short";
+  lineTwo.className = "skeleton skeleton--line skeleton--short";
 
   const lineThree = document.createElement("div");
   lineThree.className = "skeleton skeleton--line";
 
-  content.append(
-    title,
-    lineOne,
-    lineTwo,
-    lineThree
-  );
+  content.append(title, lineOne, lineTwo, lineThree);
 
   card.append(media, content);
 
@@ -177,30 +161,17 @@ export function renderGames(games) {
   elements.gamesGrid.replaceChildren(fragment);
 }
 
-export function clearResults() {
-  elements.gamesGrid.replaceChildren();
-  elements.resultsSummary.textContent = "";
-  elements.resultsSection.hidden = true;
-}
-
-export function hidePagination() {
-  elements.pagination.hidden = true;
-}
-
 export function showInitialState(
-  message = "Start typing a game title to discover games."
+  message = "Start typing a game title to discover games.",
 ) {
-  hideStatusMessages();
-  clearResults();
-  hidePagination();
+  resetView();
 
   elements.initialState.textContent = message;
   elements.initialState.hidden = false;
 }
 
 export function showLoadingState(query) {
-  hideStatusMessages();
-  hidePagination();
+  resetView();
 
   elements.loadingState.textContent = query
     ? `Searching the game library for “${query}”...`
@@ -215,20 +186,16 @@ export function showLoadingState(query) {
 }
 
 export function showErrorState(
-  message = "We could not load the games. Please try again."
+  message = "We could not load the games. Please try again.",
 ) {
-  hideStatusMessages();
-  clearResults();
-  hidePagination();
+  resetView();
 
   elements.errorState.textContent = message;
   elements.errorState.hidden = false;
 }
 
 export function showEmptyState(query) {
-  hideStatusMessages();
-  clearResults();
-  hidePagination();
+  resetView();
 
   elements.emptyState.textContent = query
     ? `No matching games were found for “${query}”.`
@@ -237,12 +204,24 @@ export function showEmptyState(query) {
   elements.emptyState.hidden = false;
 }
 
-export function showResults(games, summary) {
+export function showResults(
+  games,
+  summary,
+  fromCache = false
+) {
   hideStatusMessages();
-
   renderGames(games);
 
   elements.resultsSummary.textContent = summary;
+
+  if (fromCache) {
+    const cacheLabel = document.createElement("strong");
+    cacheLabel.className = "cache-label";
+    cacheLabel.textContent = " · Cached result";
+
+    elements.resultsSummary.append(cacheLabel);
+  }
+
   elements.resultsSection.hidden = false;
 }
 

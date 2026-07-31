@@ -1,4 +1,4 @@
-import { API_CONFIG } from "./config.js";
+import { API_CONFIG } from "../config/config.js";
 
 export class ApiError extends Error {
   constructor(message, options = {}) {
@@ -15,10 +15,10 @@ function validateApiConfiguration() {
   const hasValidKey =
     typeof API_CONFIG.apiKey === "string" &&
     API_CONFIG.apiKey.trim() !== "" &&
-    API_CONFIG.apiKey !== "YOUR_RAWG_API_KEY";
+    API_CONFIG.apiKey !== "GAME_DB_KEY";
 
   if (!hasValidKey) {
-    throw new ApiError("RAWG API key is not configured");
+    throw new ApiError("GAME DB API key is not configured");
   }
 }
 
@@ -32,11 +32,13 @@ function normalizeGame(game) {
         ? game.rating
         : 0,
     image: game.background_image || null,
+
     platforms: Array.isArray(game.platforms)
       ? game.platforms
           .map((item) => item.platform?.name)
           .filter(Boolean)
       : [],
+
     genres: Array.isArray(game.genres)
       ? game.genres
           .map((genre) => genre.name)
@@ -53,20 +55,6 @@ function validateApiResponse(data) {
   ) {
     throw new ApiError(
       "The game service returned an unexpected response"
-    );
-  }
-}
-
-async function parseResponse(response) {
-  try {
-    return await response.json();
-  } catch (error) {
-    throw new ApiError(
-      "The game service returned invalid JSON",
-      {
-        status: response.status,
-        cause: error,
-      }
     );
   }
 }
@@ -92,7 +80,19 @@ export async function searchGames({
     signal,
   });
 
-  const data = await parseResponse(response);
+  let data;
+
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new ApiError(
+      "The game service returned invalid JSON",
+      {
+        status: response.status,
+        cause: error,
+      }
+    );
+  }
 
   if (!response.ok) {
     const apiMessage =
