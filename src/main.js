@@ -110,10 +110,6 @@ function renderSearchResult(
   const formattedCount =
     result.totalResults.toLocaleString();
 
-  const cacheLabel = fromCache
-    ? " · Cached result"
-    : "";
-
 showResults(
   result.games,
   `${formattedCount} games found for “${query}” · Page ${result.currentPage} of ${result.totalPages}`,
