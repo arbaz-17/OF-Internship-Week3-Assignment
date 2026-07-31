@@ -10,7 +10,7 @@
       content="Search and discover video games with GameBox."
     />
 
-    <title>GameBox — Discover Games</title>
+    <title>GameBox - Week 3 Assignment</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,6 +27,7 @@
     <header class="app-header">
       <div class="container header-content">
         <p class="eyebrow">API Search Application Assignment</p>
+
         <h1>GameBox</h1>
 
         <p class="header-description">Find your next game.</p>
@@ -51,7 +52,6 @@
               autocomplete="off"
               minlength="2"
               enterkeyhint="search"
-              aria-controls="games-grid"
             />
 
             <button id="search-button" type="submit">Search</button>
@@ -59,12 +59,7 @@
         </form>
       </section>
 
-      <section
-        id="status-region"
-        class="status-region"
-        aria-live="polite"
-        aria-atomic="true"
-      >
+      <section id="status-region" class="status-region" aria-live="polite">
         <div id="initial-state" class="state-message">
           Start typing to discover games.
         </div>
@@ -94,7 +89,7 @@
           <p id="results-summary"></p>
         </div>
 
-        <div id="games-grid" class="games-grid" aria-live="polite"></div>
+        <div id="games-grid" class="games-grid"></div>
       </section>
 
       <nav
