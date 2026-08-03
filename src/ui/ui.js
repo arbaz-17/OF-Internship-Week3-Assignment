@@ -204,11 +204,7 @@ export function showEmptyState(query) {
   elements.emptyState.hidden = false;
 }
 
-export function showResults(
-  games,
-  summary,
-  fromCache = false
-) {
+export function showResults(games, summary, fromCache = false, source = "api") {
   hideStatusMessages();
   renderGames(games);
 
@@ -218,8 +214,14 @@ export function showResults(
     const cacheLabel = document.createElement("strong");
     cacheLabel.className = "cache-label";
     cacheLabel.textContent = " · Cached result";
-
     elements.resultsSummary.append(cacheLabel);
+  }
+
+  if (source === "mock") {
+    const fallbackLabel = document.createElement("strong");
+    fallbackLabel.className = "fallback-label";
+    fallbackLabel.textContent = " · Fallback data (API unavailable)";
+    elements.resultsSummary.append(fallbackLabel);
   }
 
   elements.resultsSection.hidden = false;

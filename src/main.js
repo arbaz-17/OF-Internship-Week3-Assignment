@@ -1,12 +1,6 @@
-import {
-  ApiError,
-  searchGames,
-} from "./api/api.js";
+import { ApiError, searchGames } from "./api/api.js";
 
-import {
-  API_CONFIG,
-  SEARCH_CONFIG,
-} from "./config/config.js";
+import { API_CONFIG, SEARCH_CONFIG } from "./config/config.js";
 
 import { createSearchCache } from "./cache/cache.js";
 import { debounce } from "./debounce/debounce.js";
@@ -24,11 +18,9 @@ const searchForm = document.querySelector("#search-form");
 const searchInput = document.querySelector("#search-input");
 const searchButton = document.querySelector("#search-button");
 
-const previousPageButton =
-  document.querySelector("#previous-page");
+const previousPageButton = document.querySelector("#previous-page");
 
-const nextPageButton =
-  document.querySelector("#next-page");
+const nextPageButton = document.querySelector("#next-page");
 
 if (
   !searchForm ||
@@ -37,9 +29,7 @@ if (
   !previousPageButton ||
   !nextPageButton
 ) {
-  throw new Error(
-    "Required application interface elements were not found"
-  );
+  throw new Error("Required application interface elements were not found");
 }
 
 const searchCache = createSearchCache();
@@ -55,6 +45,10 @@ const searchState = {
 function getUserErrorMessage(error) {
   if (!(error instanceof ApiError)) {
     return "A network error occurred. Check your connection and try again.";
+  }
+
+  if (error.message === "The game service is taking too long to respond.") {
+    return "The game service is taking longer than expected. Please try again later.";
   }
 
   if (error.status === 401 || error.status === 403) {
@@ -93,28 +87,33 @@ function resetSearchInterface(message) {
   showInitialState(message);
 }
 
-function renderSearchResult(
-  result,
-  query,
-  { fromCache = false } = {}
-) {
+function renderSearchResult(result, query, { fromCache = false } = {}) {
   searchState.activeQuery = query;
   searchState.currentPage = result.currentPage;
   searchState.totalPages = result.totalPages;
 
   if (result.games.length === 0) {
+    if (result.source === "mock") {
+      showEmptyState(
+        `"${query}" is unavailable because the API is down and no demo data exists.`,
+      );
+
+      return;
+    }
+
     showEmptyState(query);
+
     return;
   }
 
-  const formattedCount =
-    result.totalResults.toLocaleString();
+  const formattedCount = result.totalResults.toLocaleString();
 
-showResults(
-  result.games,
-  `${formattedCount} games found for “${query}” · Page ${result.currentPage} of ${result.totalPages}`,
-  fromCache
-);
+  showResults(
+    result.games,
+    `${formattedCount} games found for “${query}” · Page ${result.currentPage} of ${result.totalPages}`,
+    fromCache,
+    result.source,
+  );
 
   updatePagination({
     currentPage: result.currentPage,
@@ -142,19 +141,14 @@ async function performSearch(query, page = 1) {
     pageSize: API_CONFIG.pageSize,
   };
 
-  const cachedResult =
-    searchCache.get(cacheParameters);
+  const cachedResult = searchCache.get(cacheParameters);
 
   if (cachedResult) {
     searchButton.disabled = false;
 
-    renderSearchResult(
-      cachedResult,
-      trimmedQuery,
-      {
-        fromCache: true,
-      }
-    );
+    renderSearchResult(cachedResult, trimmedQuery, {
+      fromCache: true,
+    });
 
     return;
   }
@@ -218,24 +212,18 @@ searchInput.addEventListener("input", () => {
     searchState.currentPage = 1;
     searchState.totalPages = 1;
 
-    showInitialState(
-      "Start typing a game title to discover games."
-    );
+    showInitialState("Start typing a game title to discover games.");
 
     return;
   }
 
   if (query.length < 2) {
-    showInitialState(
-      "Enter at least two characters to search for games."
-    );
+    showInitialState("Enter at least two characters to search for games.");
 
     return;
   }
 
-  showInitialState(
-    `Waiting to search for “${query}”...`
-  );
+  showInitialState(`Waiting to search for “${query}”...`);
 
   debouncedSearch(query);
 });
@@ -248,9 +236,7 @@ searchForm.addEventListener("submit", (event) => {
   debouncedSearch.cancel();
 
   if (query.length < 2) {
-    resetSearchInterface(
-      "Enter at least two characters to search for games."
-    );
+    resetSearchInterface("Enter at least two characters to search for games.");
 
     searchInput.focus();
     return;
@@ -264,23 +250,15 @@ previousPageButton.addEventListener("click", () => {
     return;
   }
 
-  performSearch(
-    searchState.activeQuery,
-    searchState.currentPage - 1
-  );
+  performSearch(searchState.activeQuery, searchState.currentPage - 1);
 });
 
 nextPageButton.addEventListener("click", () => {
-  if (
-    searchState.currentPage >= searchState.totalPages
-  ) {
+  if (searchState.currentPage >= searchState.totalPages) {
     return;
   }
 
-  performSearch(
-    searchState.activeQuery,
-    searchState.currentPage + 1
-  );
+  performSearch(searchState.activeQuery, searchState.currentPage + 1);
 });
 
 showInitialState();

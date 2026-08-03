@@ -1,46 +1,55 @@
-export function getMockGames(query) {
-  const games = [
-    {
-      id: 1,
-      name: "F1 24",
-      released: "2024-05-31",
-      rating: 4.2,
-      image: null,
-      platforms: ["PC", "PlayStation 5"],
-      genres: ["Racing"],
-    },
-    {
-      id: 2,
-      name: "Elden Ring",
-      released: "2022-02-25",
-      rating: 4.6,
-      image: null,
-      platforms: ["PC", "PlayStation"],
-      genres: ["RPG"],
-    },
-    {
-      id: 3,
-      name: "Cyberpunk 2077",
-      released: "2020-12-10",
-      rating: 4.1,
-      image: null,
-      platforms: ["PC", "Xbox"],
-      genres: ["Action"],
-    },
-  ];
+export const mockGames = [
+  {
+    id: 1,
+    title: "F1 24",
+    release_date: "2024-05-31",
+    thumbnail: null,
+    platform: "PC",
+    genre: "Racing",
+  },
 
-  const filteredGames = games.filter((game) =>
-    game.name
+  {
+    id: 2,
+    title: "Forza Horizon 5",
+    release_date: "2021-11-09",
+    thumbnail: null,
+    platform: "PC",
+    genre: "Racing",
+  },
+
+  {
+    id: 3,
+    title: "Elden Ring",
+    release_date: "2022-02-25",
+    thumbnail: null,
+    platform: "PC",
+    genre: "RPG",
+  },
+
+  {
+    id: 4,
+    title: "Cyberpunk 2077",
+    release_date: "2020-12-10",
+    thumbnail: null,
+    platform: "PC",
+    genre: "Action",
+  },
+
+  {
+    id: 5,
+    title: "Grand Theft Auto V",
+    release_date: "2013-09-17",
+    thumbnail: null,
+    platform: "PC",
+    genre: "Action",
+  },
+];
+
+
+export function getMockGames(query) {
+  return mockGames.filter((game) =>
+    game.title
       .toLowerCase()
       .includes(query.toLowerCase())
   );
-
-  return {
-    games: filteredGames,
-    totalResults: filteredGames.length,
-    totalPages: 1,
-    currentPage: 1,
-    hasPrevious: false,
-    hasNext: false,
-  };
 }
