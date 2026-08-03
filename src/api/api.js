@@ -1,4 +1,5 @@
 import { API_CONFIG } from "../config/config.js";
+import { mockGames } from "./mockData.js";
 
 export class ApiError extends Error {
   constructor(message, options = {}) {
@@ -76,9 +77,19 @@ export async function searchGames({
     String(API_CONFIG.pageSize)
   );
 
-  const response = await fetch(url, {
+let response;
+
+try {
+  response = await fetch(url, {
     signal,
   });
+} catch (error) {
+  console.warn(
+    "RAWG API unavailable. Using fallback data."
+  );
+
+  return mockGames;
+}
 
   let data;
 
