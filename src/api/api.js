@@ -1,5 +1,6 @@
 import { API_CONFIG } from "../config/config.js";
-import { mockGames } from "./mockData.js";
+import { getMockGames } from "./mockData.js";
+
 
 export class ApiError extends Error {
   constructor(message, options = {}) {
@@ -88,7 +89,7 @@ try {
     "RAWG API unavailable. Using fallback data."
   );
 
-  return mockGames;
+  return getMockGames(query);
 }
 
   let data;
