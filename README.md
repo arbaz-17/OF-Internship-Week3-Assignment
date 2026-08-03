@@ -65,9 +65,7 @@ OF-Internship-Week3-Assignment/
 └── README.md
 ```
 
-> `config.js` is committed because GitHub Pages is a static hosting service and the browser must load this file at runtime.
-> The project uses a separate, rotatable demo API key. The key should not be treated as private because frontend configuration is visible in browser developer tools.
-> `config.example.js` documents the required configuration structure using a placeholder value.  
+> `config.js` is committed because GitHub Pages is a static hosting service, so the browser must load the configuration file at runtime. I identified this deployment limitation near the end of the assignment. Since secure secret management was outside this week’s scope, I used a separate, rotatable demo key and will account for this requirement earlier in future projects.
 
 ## Module Responsibilities
 
