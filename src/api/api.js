@@ -89,7 +89,7 @@ try {
     "RAWG API unavailable. Using fallback data."
   );
 
-  return getMockGames(query);
+  return getMockGames(query, page);
 }
 
   let data;
